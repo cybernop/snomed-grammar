@@ -5,9 +5,7 @@ import nltk
 
 import snomed
 
-spec = pathlib.Path('grammar.txt').read_text()
-
-spec = spec.splitlines()
+spec = snomed.read_spec('grammar.txt')
 
 grammar = nltk.CFG.fromstring(snomed.SPECIFICATION_GRAMMAR)
 
