@@ -80,29 +80,16 @@ def gen_from_tree(tree):
 
     label = tree.label()
 
-    if label == RULE:
-        return Rule.from_tree(tree)
-    elif label == DEFINITION:
-        if len(tree) == 1:
-            return gen_from_tree(tree[0])
-    elif label == SYMBOL:
-        return Symbol.from_tree(tree)
-    elif label == COMMENT:
-        '''
-        Comments persists of five parts:
-        * the information
-        * a space
-        * a semicolon
-        * a space
-        * the comment text
-        only the information is needed here
-        '''
-        if len(tree) == 5:
-            return gen_from_tree(tree[0])
-    elif label == STRING:
-        return join_leaves(tree)
-    else:
-        return GrammarBuilder._tree_to_dict(tree)
+    actions = {
+        RULE: lambda x: Rule.from_tree(x),
+        SYMBOL: lambda x: Symbol.from_tree(x),
+        DEFINITION: lambda x: gen_from_tree(x[0]),
+        COMMENT: lambda x: gen_from_tree(x[0]),
+        STRING: lambda x: join_leaves(tree)
+    }
+    def default(x): return GrammarBuilder._tree_to_dict(x)
+
+    return actions.get(label, default)(tree)
 
 
 def join_leaves(tree):
