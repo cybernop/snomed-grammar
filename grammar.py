@@ -75,6 +75,7 @@ def gen_from_tree(tree):
     RULE = 'S'
     DEFINITION = 'def'
     SYMBOL = 'ascii'
+    COMMENT = 'comment'
 
     label = tree.label()
 
@@ -85,6 +86,18 @@ def gen_from_tree(tree):
             return gen_from_tree(tree[0])
     elif label == SYMBOL:
         return Symbol.from_tree(tree)
+    elif label == COMMENT:
+        '''
+        Comments persists of five parts:
+        * the information
+        * a space
+        * a semicolon
+        * a space
+        * the comment text
+        only the information is needed here
+        '''
+        if len(tree) == 5:
+            return gen_from_tree(tree[0])
     else:
         return GrammarBuilder._tree_to_dict(tree)
 
