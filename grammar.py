@@ -73,13 +73,24 @@ class GrammarBuilder:
 
 def gen_from_tree(tree):
     RULE = 'S'
+    DEFINITION = 'def'
+    SYMBOL = 'ascii'
 
     label = tree.label()
 
     if label == RULE:
         return Rule.from_tree(tree)
+    elif label == DEFINITION:
+        if len(tree) == 1:
+            return gen_from_tree(tree[0])
+    elif label == SYMBOL:
+        return Symbol.from_tree(tree)
     else:
         return GrammarBuilder._tree_to_dict(tree)
+
+
+def join_leaves(tree):
+    return ''.join(tree.leaves())
 
 
 class Rule:
@@ -96,8 +107,8 @@ class Rule:
         for entry in tree:
             if isinstance(entry, nltk.Tree):
                 if entry.label() == Rule.LABEL:
-                    label = ''.join(entry.leaves())
-                elif entry.label() == Rule.DEFINITION:
+                    label = join_leaves(entry)
+                else:
                     definition = gen_from_tree(entry)
 
         if label and definition:
@@ -108,3 +119,29 @@ class Rule:
 
     def __str__(self):
         return f'{self.label} -> {self.definition}'
+
+
+class Symbol:
+    def __init__(self, value=None, min=None, max=None):
+        self.value = value
+        self.min = min
+        self.max = max
+
+    @staticmethod
+    def from_tree(tree):
+        string = join_leaves(tree)
+        values = string.replace('%x', '').split('-')
+
+        if len(values) == 1:
+            return Symbol(value=int(values[0], 16))
+        elif len(values) == 2:
+            return Symbol(min=int(values[0], 16), max=int(values[1], 16))
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        if self.value:
+            return f'\'{chr(self.value)}\''
+        else:
+            return ' | '.join([f'\'{chr(entry)}\'' for entry in range(self.min, self.max+1)])
