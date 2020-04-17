@@ -12,8 +12,9 @@ multi -> '*' | number | number '*' number | number '*'
 label -> word
 string -> '"' word '"'
 ascii -> '%' 'x' hex hex | '%' 'x' hex hex '-' hex hex
-number -> '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | number number
-hex -> 'A' | 'a' | 'B' | 'b' | 'C' | 'c' | 'D' | 'd' | 'E' | 'e' | 'F' | 'f' | number
+number -> number digit | digit
+digit -> '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+hex -> 'A' | 'a' | 'B' | 'b' | 'C' | 'c' | 'D' | 'd' | 'E' | 'e' | 'F' | 'f' | digit
 words -> words SP word | word
 word -> chars
 symbol -> '=' | '<' | ':' | '+' | '|' | '#' | ',' | '{' | '}' | '.'

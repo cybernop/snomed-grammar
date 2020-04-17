@@ -27,7 +27,7 @@ class GrammarBuilder:
     def to_dict(self):
         res = []
         for tree in self.trees:
-            res.append(GrammarBuilder._tree_to_dict(tree))
+            res.append(gen_from_tree(tree))
         return res
 
     @staticmethod
@@ -39,6 +39,8 @@ class GrammarBuilder:
             if isinstance(entry, nltk.Tree):
                 label = entry.label()
                 if label == 'words' or label == 'word':
+                    spec.append((label, ''.join(entry.leaves())))
+                elif label == 'number':
                     spec.append((label, ''.join(entry.leaves())))
                 elif label == 'string':
                     spec.append((label, ''.join(entry.leaves())))
@@ -67,3 +69,42 @@ class GrammarBuilder:
             spec = spec[1]
 
         return spec
+
+
+def gen_from_tree(tree):
+    RULE = 'S'
+
+    label = tree.label()
+
+    if label == RULE:
+        return Rule.from_tree(tree)
+    else:
+        return GrammarBuilder._tree_to_dict(tree)
+
+
+class Rule:
+    LABEL = 'label'
+    DEFINITION = 'def'
+
+    def __init__(self, label=None, definition=None):
+        self.label = label
+        self.definition = definition
+
+    @staticmethod
+    def from_tree(tree):
+        label, definition = None, None
+        for entry in tree:
+            if isinstance(entry, nltk.Tree):
+                if entry.label() == Rule.LABEL:
+                    label = ''.join(entry.leaves())
+                elif entry.label() == Rule.DEFINITION:
+                    definition = gen_from_tree(entry)
+
+        if label and definition:
+            return Rule(label, definition)
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return f'{self.label} -> {self.definition}'
