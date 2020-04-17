@@ -76,6 +76,7 @@ def gen_from_tree(tree):
     DEFINITION = 'def'
     SYMBOL = 'ascii'
     COMMENT = 'comment'
+    STRING = 'string'
 
     label = tree.label()
 
@@ -98,6 +99,8 @@ def gen_from_tree(tree):
         '''
         if len(tree) == 5:
             return gen_from_tree(tree[0])
+    elif label == STRING:
+        return join_leaves(tree)
     else:
         return GrammarBuilder._tree_to_dict(tree)
 
