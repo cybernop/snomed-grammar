@@ -38,7 +38,7 @@ class GrammarBuilder:
         for entry in tree:
             if isinstance(entry, nltk.Tree):
                 label = entry.label()
-                if label == 'word':
+                if label == 'words' or label == 'word':
                     spec.append((label, ''.join(entry.leaves())))
                 elif label == 'string':
                     spec.append((label, ''.join(entry.leaves())))
