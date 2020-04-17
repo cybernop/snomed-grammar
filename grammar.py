@@ -73,19 +73,23 @@ class GrammarBuilder:
 
 def gen_from_tree(tree):
     RULE = 'S'
-    DEFINITION = 'def'
     SYMBOL = 'ascii'
+    OPTION = 'OR'
+    DEFINITION = 'def'
     COMMENT = 'comment'
     STRING = 'string'
+    LABEL = 'label'
 
     label = tree.label()
 
     actions = {
         RULE: lambda x: Rule.from_tree(x),
         SYMBOL: lambda x: Symbol.from_tree(x),
+        OPTION: lambda x: Option.from_tree(tree),
         DEFINITION: lambda x: gen_from_tree(x[0]),
         COMMENT: lambda x: gen_from_tree(x[0]),
-        STRING: lambda x: join_leaves(tree)
+        STRING: lambda x: join_leaves(tree),
+        LABEL: lambda x: join_leaves(tree),
     }
     def default(x): return GrammarBuilder._tree_to_dict(x)
 
@@ -148,3 +152,21 @@ class Symbol:
             return f'\'{chr(self.value)}\''
         else:
             return ' | '.join([f'\'{chr(entry)}\'' for entry in range(self.min, self.max+1)])
+
+
+class Option:
+    def __init__(self, first=None, second=None):
+        self.first = first
+        self.second = second
+
+    @staticmethod
+    def from_tree(tree):
+        first = gen_from_tree(tree[0])
+        second = gen_from_tree(tree[4])
+        return Option(first, second)
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return f'{self.first} | {self.second}'
