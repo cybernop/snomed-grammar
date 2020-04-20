@@ -42,14 +42,10 @@ class GrammarBuilder:
                     spec.append((label, ''.join(entry.leaves())))
                 elif label == 'number':
                     spec.append((label, ''.join(entry.leaves())))
-                elif label == 'string':
-                    spec.append((label, ''.join(entry.leaves())))
-                elif label == 'ascii':
-                    spec.append((label, ''.join(entry.leaves())))
                 elif label == 'SP':
                     continue
                 else:
-                    spec.append((label, GrammarBuilder._tree_to_dict(entry)))
+                    spec.append(gen_from_tree(entry))
             else:
                 spec.append(entry)
 
